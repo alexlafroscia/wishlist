@@ -71,4 +71,43 @@ class UserTest < ActiveSupport::TestCase
     @user.password = @user.password_confirmation = 'a' * 5
     assert_not @user.valid?
   end
+
+  test 'auth token will be set on create' do
+    assert_not @user.auth_token?
+    @user.save
+    assert @user.auth_token?
+  end
+
+  test 'auth token can be regenerated' do
+    @user.save # Generate initial token
+    initial_token = @user.auth_token
+    new_token = @user.regenerate_auth_token
+    assert_not_equal initial_token, new_token
+  end
+
+  test 'it verifies a correct password' do
+    assert @user.authenticate('foobar')
+  end
+
+  test 'it rejects an incorrect password' do
+    assert_not @user.authenticate('foobaz')
+  end
+
+  test 'it successfully authenticates a correct email and password' do
+    @user.save
+    user = User.authenticate('user@example.com', 'foobar')
+    assert_equal @user, user
+  end
+
+  test 'it rejects a correct email and incorrect password' do
+    @user.save
+    user = User.authenticate('user@example.com', 'foobaz')
+    assert_equal user, nil
+  end
+
+  test 'it rejects an incorrect email' do
+    @user.save
+    user = User.authenticate('fake@example.com', 'foobar')
+    assert_equal user, nil
+  end
 end

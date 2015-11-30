@@ -17,10 +17,12 @@ ActiveRecord::Schema.define(version: 20151130002255) do
     t.string   "name"
     t.string   "email"
     t.string   "password_digest"
+    t.string   "auth_token"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
 
+  add_index "users", ["auth_token"], name: "index_users_on_auth_token", unique: true
   add_index "users", ["email"], name: "index_users_on_email", unique: true
 
 end
