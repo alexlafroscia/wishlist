@@ -2,3 +2,6 @@ fail_on_violations: true
 
 javascript:
   config_file: frontend/.jshintrc
+
+ruby:
+  config_file: .rubocop.yml
