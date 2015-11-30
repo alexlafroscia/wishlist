@@ -38,4 +38,11 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Turn off stylesheet, JS, and helper generators, since that is all handled in Ember
+  config.generators do |generate|
+    generate.assets false
+    generate.helper false
+    generate.view_specs false
+  end
 end
