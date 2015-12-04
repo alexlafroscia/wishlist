@@ -1,0 +1,8 @@
+language: ruby
+before_install:
+  - npm install -g ember-cli bower
+  - cd $TRAVIS_BUILD_DIR/frontend; npm install
+  - cd $TRAVIS_BUILD_DIR/frontend; bower install
+script:
+  - cd frontend; ember test # Execute the Ember tests
+  - rake # Execute the Rails tests
