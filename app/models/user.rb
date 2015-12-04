@@ -2,6 +2,9 @@ require 'securerandom'
 
 VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
+# User Model
+#
+# Represents a user in the system
 class User < ActiveRecord::Base
   before_save { email.downcase! }
 
@@ -17,25 +20,22 @@ class User < ActiveRecord::Base
 
   def self.authenticate(email, password)
     user = find_by_email(email)
-    if user && user.authenticate(password)
-      user
-    else
-      nil
-    end
+    return user if user && user.authenticate(password)
   end
 
   def regenerate_auth_token
     self.auth_token = generate_auth_token
-    return self.auth_token
+    auth_token
   end
 
   private
-    def set_auth_token
-      return if self.auth_token.present?
-      self.auth_token = generate_auth_token
-    end
 
-    def generate_auth_token
-      SecureRandom.uuid.gsub(/\-/,'')
-    end
+  def set_auth_token
+    return if auth_token.present?
+    self.auth_token = generate_auth_token
+  end
+
+  def generate_auth_token
+    SecureRandom.uuid.gsub(/\-/, '')
+  end
 end

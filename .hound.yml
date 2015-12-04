@@ -1,0 +1,11 @@
+fail_on_violations: true
+
+javascript:
+  config_file: frontend/.jshintrc
+
+jscs:
+  enabled: true
+  config_file: frontend/.jscsrc
+
+ruby:
+  config_file: .rubocop.yml
