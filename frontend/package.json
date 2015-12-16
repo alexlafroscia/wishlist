@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "ember build",
+    "postinstall": "bower install",
     "start": "ember server",
     "test": "ember test"
   },
@@ -40,5 +41,8 @@
     "ember-disable-proxy-controllers": "^1.0.1",
     "ember-export-application-global": "^1.0.4",
     "ember-suave": "1.2.3"
+  },
+  "dependencies": {
+    "bower": "^1.7.1"
   }
 }
