@@ -32,6 +32,11 @@ Style/GuardClause:
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-nested-conditionals
   Enabled: false
   MinBodyLength: 1
+Style/IndentationConsistency:
+  EnforcedStyle: rails
+  SupportedStyles:
+    - normal
+    - rails
 Style/IfUnlessModifier:
   Description: Favor modifier if/unless usage when you have a single-line body.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#if-as-a-modifier
