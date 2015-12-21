@@ -4,7 +4,9 @@ if ENV['CI']
   Coveralls.wear!('rails')
 else
   require 'simplecov'
-  SimpleCov.start('rails')
+  SimpleCov.start 'rails' do
+    add_group 'Resources', 'app/resources'
+  end
 end
 
 ENV['RAILS_ENV'] ||= 'test'
