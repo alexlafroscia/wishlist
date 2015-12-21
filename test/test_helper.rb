@@ -1,5 +1,11 @@
-require 'coveralls'
-Coveralls.wear!('rails')
+# Start Test Coverage
+if ENV['CI']
+  require 'coveralls'
+  Coveralls.wear!('rails')
+else
+  require 'simplecov'
+  SimpleCov.start('rails')
+end
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
