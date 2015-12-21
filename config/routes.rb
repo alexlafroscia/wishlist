@@ -5,5 +5,9 @@ Rails.application.routes.draw do
     delete 'session', to: 'session#destroy'
   end
 
+  scope '/api' do
+    jsonapi_resources :user
+  end
+
   mount_ember_app :frontend, to: '/'
 end

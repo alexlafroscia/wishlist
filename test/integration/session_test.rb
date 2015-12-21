@@ -18,11 +18,4 @@ class SessionTest < ActionDispatch::IntegrationTest
     get '/api/session', nil, authorization: auth_header(@current_user)
     assert_response 401
   end
-
-  private
-
-    def auth_header(user)
-      token = user.auth_token
-      ActionController::HttpAuthentication::Token.encode_credentials(token)
-    end
 end
