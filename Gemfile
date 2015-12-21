@@ -35,6 +35,12 @@ gem 'bcrypt', '~> 3.1.7'
 # Add support for Ember CLI
 gem 'ember-cli-rails'
 
+# Add support for the JSON:API spec
+gem 'jsonapi-resources'
+
+# Test Coverage Tool
+gem 'coveralls', require: false
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger
   # console

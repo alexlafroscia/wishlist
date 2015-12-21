@@ -14,6 +14,8 @@ class User < ActiveRecord::Base
 
   before_create :set_auth_token
 
+  has_many :lists, dependent: :destroy
+
   # Public: Authenticate a user
   #
   # Examples:

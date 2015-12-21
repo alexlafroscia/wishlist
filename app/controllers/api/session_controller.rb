@@ -7,12 +7,12 @@ class Api::SessionController < ApplicationController
     if user.nil?
       render json: {}, status: 401
     else
-      render json: user
+      render json: { auth_token: user.auth_token }
     end
   end
 
   def get
-    render json: @current_user
+    render json: serialize_user(@current_user)
   end
 
   def destroy
@@ -20,4 +20,11 @@ class Api::SessionController < ApplicationController
     @current_user.save!
     render json: {}, status: 200
   end
+
+  private
+
+    def serialize_user(user)
+      resource = UserResource.new(user, nil)
+      JSONAPI::ResourceSerializer.new(UserResource).serialize_to_hash(resource)
+    end
 end
