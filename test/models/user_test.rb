@@ -106,4 +106,12 @@ class UserTest < ActiveSupport::TestCase
     user = User.authenticate('fake@example.com', 'foobar')
     assert_equal user, nil
   end
+
+  test 'lists should be destroyed with their owner' do
+    @user.save
+    list = List.new(title: 'Test List', owner: @user)
+    list.save
+    @user.destroy
+    assert_not List.exists?(list.id), 'List should be destroyed'
+  end
 end

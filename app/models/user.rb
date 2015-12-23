@@ -15,9 +15,10 @@ class User < ActiveRecord::Base
   before_create :set_auth_token
 
   has_many :lists, dependent: :destroy,
+                   foreign_key: 'owner_id',
                    inverse_of: :owner
 
-  has_many :subscriptions
+  has_many :subscriptions, dependent: :destroy
   has_many :subscribed_lists, through: :subscriptions,
                               source: :list
 
