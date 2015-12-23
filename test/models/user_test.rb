@@ -20,6 +20,13 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.valid?
   end
 
+  test 'email must be unique' do
+    @user.save
+    user2 = User.new(name: 'Other User', email: 'user@example.com',
+                     password: 'foobar')
+    assert_not user2.valid?
+  end
+
   test 'name should not be too long' do
     @user.name = 'a' * 51
     assert_not @user.valid?

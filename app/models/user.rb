@@ -14,7 +14,12 @@ class User < ActiveRecord::Base
 
   before_create :set_auth_token
 
-  has_many :lists, dependent: :destroy
+  has_many :lists, dependent: :destroy,
+                   inverse_of: :owner
+
+  has_many :subscriptions
+  has_many :subscribed_lists, through: :subscriptions,
+                              source: :list
 
   # Public: Authenticate a user
   #

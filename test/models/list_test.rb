@@ -16,7 +16,7 @@ class ListTest < ActiveSupport::TestCase
     assert_not @list.valid?
   end
 
-  test 'user should be present' do
+  test 'owner must be present' do
     @list.owner = nil
     assert_not @list.valid?
   end
