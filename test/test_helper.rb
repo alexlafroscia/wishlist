@@ -31,8 +31,11 @@ class ActiveSupport::TestCase
     ActionController::HttpAuthentication::Token.encode_credentials(token)
   end
 
-  def assert_no_errors(response)
-    body = ActiveSupport::JSON.decode(response.body)
+  def assert_no_errors
+    body = ActiveSupport::JSON.decode(@response.body)
+    if body.key?('errors')
+      body['errors'].each { |error| puts error }
+    end
     assert_not body.key?('errors'), 'Expected response to have no errors'
   end
 
@@ -48,6 +51,13 @@ class ActiveSupport::TestCase
         attributes: data
       }
     }
+  end
+
+  def raw_put(action, params, body)
+    @request.env['RAW_PUT_DATA'] = body
+    response = put(action, params)
+    @request.env.delete('RAW_PUT_DATA')
+    response
   end
 
   def assert_attribute_included(attr)

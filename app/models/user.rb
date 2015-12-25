@@ -14,7 +14,13 @@ class User < ActiveRecord::Base
 
   before_create :set_auth_token
 
-  has_many :lists, dependent: :destroy
+  has_many :lists, dependent: :destroy,
+                   foreign_key: 'owner_id',
+                   inverse_of: :owner
+
+  has_many :subscriptions, dependent: :destroy
+  has_many :subscribed_lists, through: :subscriptions,
+                              source: :list
 
   # Public: Authenticate a user
   #
@@ -37,6 +43,15 @@ class User < ActiveRecord::Base
   def regenerate_auth_token
     self.auth_token = generate_auth_token
     auth_token
+  end
+
+  # Public: Return the lists that are accessible to the user
+  #
+  # Returns: Array of lists
+  def accessible_lists
+    list_copy = lists.clone
+    list_copy.concat subscribed_lists
+    list_copy
   end
 
   private

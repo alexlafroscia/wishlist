@@ -20,6 +20,13 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.valid?
   end
 
+  test 'email must be unique' do
+    @user.save
+    user2 = User.new(name: 'Other User', email: 'user@example.com',
+                     password: 'foobar')
+    assert_not user2.valid?
+  end
+
   test 'name should not be too long' do
     @user.name = 'a' * 51
     assert_not @user.valid?
@@ -98,5 +105,30 @@ class UserTest < ActiveSupport::TestCase
     @user.save
     user = User.authenticate('fake@example.com', 'foobar')
     assert_equal user, nil
+  end
+
+  test 'lists should be destroyed with their owner' do
+    @user.save
+    list = List.new(title: 'Test List', owner: @user)
+    list.save
+    @user.destroy
+    assert_not List.exists?(list.id), 'List should be destroyed'
+  end
+
+  test 'it can get its accessible lists' do
+    @user.save
+    # Set up an owned list
+    list = List.new(title: 'List 1', owner: @user)
+    list.save
+
+    # Set up a subscribed list
+    other = User.new(name: 'Other', email: 'foo@bar.com', password: 'foobar')
+    other.save
+    list2 = List.new(title: 'List 2', owner: other)
+    list2.save
+    sub = Subscription.new(list: list2, user: @user)
+    sub.save
+
+    assert_equal 2, @user.accessible_lists.length
   end
 end

@@ -13,7 +13,7 @@ class UserControllerTest < ActionController::TestCase
                          )
     post :create, body
     assert_response :success
-    assert_no_errors response
+    assert_no_errors
     assert_attribute_not_included 'password'
   end
 end
