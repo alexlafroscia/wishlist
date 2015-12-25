@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   scope '/api' do
     jsonapi_resources :user
+    jsonapi_resources :list
   end
 
   mount_ember_app :frontend, to: '/'

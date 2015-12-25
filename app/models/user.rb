@@ -45,6 +45,15 @@ class User < ActiveRecord::Base
     auth_token
   end
 
+  # Public: Return the lists that are accessible to the user
+  #
+  # Returns: Array of lists
+  def accessible_lists
+    list_copy = lists.clone
+    list_copy.concat subscribed_lists
+    list_copy
+  end
+
   private
 
     def set_auth_token
