@@ -12,8 +12,11 @@ end
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
+require File.expand_path('../../lib/support/test_password_helper', __FILE__)
 
 class ActiveSupport::TestCase
+  include TestPasswordHelper
+
   # Setup all fixtures in test/fixtures/*.yml for all tests in
   # alphabetical order.
   fixtures :all
@@ -79,3 +82,5 @@ class ActiveSupport::TestCase
                "Attribute '#{attr}' should not be included"
   end
 end
+
+ActiveRecord::FixtureSet.context_class.send :include, TestPasswordHelper
