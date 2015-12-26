@@ -2,10 +2,7 @@ require 'test_helper'
 
 class SessionTest < ActionDispatch::IntegrationTest
   def setup
-    @current_user = User.new(name: 'Example User',
-                             email: 'user@example.com',
-                             password: 'foobar')
-    @current_user.save
+    @current_user = users(:current_user)
   end
 
   test 'should log the user out when they delete their session' do
