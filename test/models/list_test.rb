@@ -2,9 +2,8 @@ require 'test_helper'
 
 class ListTest < ActiveSupport::TestCase
   def setup
-    @user = User.new(name: 'Example User', email: 'user@example.com',
-                     password: 'foobar')
-    @list = List.new(title: 'My New List', owner: @user)
+    @user = users(:current_user)
+    @list = lists(:subscribed_list)
   end
 
   test 'should be valid' do
@@ -22,21 +21,14 @@ class ListTest < ActiveSupport::TestCase
   end
 
   test 'when a list is removed, all related subscriptions are deleted' do
-    other = User.new(name: 'Other User', email: 'other@example.com',
-                     password: 'foobar')
-    sub = Subscription.new(user: other, list: @list)
-    sub.save
+    sub = subscriptions(:current_user_subscription)
     @list.destroy
     assert_not Subscription.exists?(sub.id), 'Subscription was destroyed'
   end
 
   test 'when a user is removed, all related subscriptions are deleted' do
-    other = User.new(name: 'Other User', email: 'other@example.com',
-                     password: 'foobar')
-    other.save
-    sub = Subscription.new(user: other, list: @list)
-    sub.save
-    other.destroy
+    sub = subscriptions(:current_user_subscription)
+    @user.destroy
     assert_not Subscription.exists?(sub.id), 'Subscription was destroyed'
   end
 end

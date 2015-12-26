@@ -3,25 +3,13 @@ require 'test_helper'
 class ListControllerTest < ActionController::TestCase
   def setup
     setup_json_api_headers
-    @current_user = User.new(name: 'Example User',
-                             email: 'test@example.com',
-                             password: 'foobar')
-    @current_user.save
+    @current_user = users(:current_user)
     authenticate @current_user
 
     # Set up the lists
-    other = User.new(name: 'Other User',
-                     email: 'other@example.com',
-                     password: 'foobar')
-    other.save!
-    @list1 = List.new(title: 'List 1', owner: @current_user)
-    @list1.save!
-    @list2 = List.new(title: 'List 2', owner: other)
-    @list2.save!
-    @list3 = List.new(title: 'List 3', owner: other)
-    @list3.save!
-    subscription = Subscription.new(list: @list2, user: @current_user)
-    subscription.save!
+    @owned_list = lists(:owned_list)
+    @subscribed_list = lists(:subscribed_list)
+    @inaccessible_list = lists(:inaccessible_list)
   end
 
   def teardown
@@ -36,27 +24,27 @@ class ListControllerTest < ActionController::TestCase
   end
 
   test 'does not allow access to unsubscribed lists' do
-    get :show, 'id' => @list2.id
+    get :show, 'id' => @subscribed_list.id
     assert_response :success, 'Found an accessible list'
 
-    get :show, 'id' => @list3.id
+    get :show, 'id' => @inaccessible_list.id
     assert_response 404, 'Did not find an inaccessible list'
   end
 
   test 'can update owned lists' do
     body = {
       type: 'lists',
-      id: @list1.id,
+      id: @owned_list.id,
       attributes: {
         title: 'This is the updated title'
       }
     }
-    put :update, 'id' => @list1.id, 'data' => body
+    put :update, 'id' => @owned_list.id, 'data' => body
     assert_response :success
   end
 
   test 'cannot update an unowned lists' do
-    id = @list2.id
+    id = @subscribed_list.id
     body = {
       type: 'lists',
       id: id,
@@ -69,7 +57,7 @@ class ListControllerTest < ActionController::TestCase
   end
 
   test 'cannot update an inaccessible list' do
-    id = @list3.id
+    id = @inaccessible_list.id
     body = {
       type: 'lists',
       id: id,
@@ -82,19 +70,19 @@ class ListControllerTest < ActionController::TestCase
   end
 
   test 'can delete owned lists' do
-    id = @list1.id
+    id = @owned_list.id
     delete :destroy, 'id' => id
     assert_response :success
   end
 
   test 'cannot delete an unowned list' do
-    id = @list2.id
+    id = @subscribed_list.id
     delete :destroy, 'id' => id
     assert_response 403
   end
 
   test 'cannot delete an inaccessible list' do
-    id = @list3.id
+    id = @inaccessible_list.id
     delete :destroy, 'id' => id
     assert_response 404
   end

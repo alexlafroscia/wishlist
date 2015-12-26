@@ -1,7 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  title: 
+owned_list:
+  title: 'Owned List'
+  owner: current_user
 
-two:
-  title: 
+subscribed_list:
+  title: 'Subscribed List'
+  owner: other_user
+
+inaccessible_list:
+  title: 'Inaccessible List'
+  owner: other_user
