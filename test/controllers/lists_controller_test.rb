@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ListControllerTest < ActionController::TestCase
+class ListsControllerTest < ActionController::TestCase
   def setup
     setup_json_api_headers
     @current_user = users(:current_user)

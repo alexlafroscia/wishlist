@@ -1,4 +1,4 @@
-class ListController < JSONAPI::ResourceController
+class ListsController < JSONAPI::ResourceController
   before_action :verify_ownership, only: [:update, :destroy]
 
   private

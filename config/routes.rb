@@ -6,8 +6,13 @@ Rails.application.routes.draw do
   end
 
   scope '/api' do
-    jsonapi_resources :user
-    jsonapi_resources :list
+    jsonapi_resources :users
+    jsonapi_resources :lists do
+      jsonapi_links :owner, only: [:show]
+      jsonapi_related_resource :owner
+    end
+
+    match '*not_found', to: 'application#routing_error', via: :all
   end
 
   mount_ember_app :frontend, to: '/'
