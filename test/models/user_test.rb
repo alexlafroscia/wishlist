@@ -65,20 +65,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal @user.email, 'user@example.com'
   end
 
-  test 'auth token will be set on create' do
-    new_user = User.new(name: 'New User', email: 'new@example.com',
-                        password: 'foobar')
-    assert_not new_user.auth_token?, 'User starts without auth token'
-    new_user.save
-    assert new_user.auth_token?, 'User has auth token after save'
-  end
-
-  test 'auth token can be regenerated' do
-    initial_token = @user.auth_token
-    new_token = @user.regenerate_auth_token
-    assert_not_equal initial_token, new_token
-  end
-
   test 'it verifies a correct password' do
     assert @user.authenticate(default_password), 'Verified the correct password'
   end
@@ -88,8 +74,9 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test 'it successfully authenticates a correct email and password' do
-    user = User.authenticate('user@example.com', default_password)
-    assert_equal @user, user, 'Authenticated the user correctly'
+    assert_difference('AuthToken.count', 1) do
+      User.authenticate('user@example.com', default_password)
+    end
   end
 
   test 'it rejects a correct email and incorrect password' do
@@ -111,5 +98,11 @@ class UserTest < ActiveSupport::TestCase
 
   test 'it can get its accessible lists' do
     assert_equal 2, @user.accessible_lists.length
+  end
+
+  test 'it can look up a user by an auth token' do
+    token_value = auth_tokens(:current_user_token).value
+    user = User.find_by_token(token_value)
+    assert_equal users(:current_user), user, 'Found the correct user'
   end
 end

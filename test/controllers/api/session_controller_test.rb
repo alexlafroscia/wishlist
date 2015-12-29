@@ -29,11 +29,19 @@ class Api::SessionControllerTest < ActionController::TestCase
     post :create, email: 'user@example.com', password: default_password
     assert_response :success
     body = JSON.parse(@response.body)
-    assert_equal body['auth_token'], @current_user.auth_token
+    assert_equal body['auth_token'], assigns[:token].value
   end
 
   test 'should fail to log in with incorrect email and password' do
     post :create, email: 'user@example.com', password: ''
     assert_response 401
+  end
+
+  test 'should delete the auth token when logging out' do
+    authenticate @current_user
+    assert_difference('AuthToken.count', -1) do
+      delete :destroy
+      assert_response :success
+    end
   end
 end

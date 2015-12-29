@@ -3,10 +3,8 @@ current_user:
   name: 'Example User'
   email: 'user@example.com'
   password_digest: <%= default_password_digest %>
-  auth_token: '12345'
 
 other_user:
   name: 'Other User'
   email: 'other@example.com'
   password_digest: <%= default_password_digest %>
-  auth_token: '678910'

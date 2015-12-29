@@ -22,16 +22,18 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Authenticate a user in a Functional test
-  def authenticate(user)
-    token = user.auth_token
-    @request.env['HTTP_AUTHORIZATION'] =
-      ActionController::HttpAuthentication::Token.encode_credentials(token)
+  def authenticate(user, token = nil)
+    get_auth_token(user, token) do |value|
+      @request.env['HTTP_AUTHORIZATION'] =
+        ActionController::HttpAuthentication::Token.encode_credentials(value)
+    end
   end
 
   # Generate the authentication header for an Integration test
-  def auth_header(user)
-    token = user.auth_token
-    ActionController::HttpAuthentication::Token.encode_credentials(token)
+  def auth_header(user, token = nil)
+    get_auth_token(user, token) do |value|
+      ActionController::HttpAuthentication::Token.encode_credentials(value)
+    end
   end
 
   def assert_no_errors
@@ -81,6 +83,13 @@ class ActiveSupport::TestCase
     assert_not body['data']['attributes'][attr],
                "Attribute '#{attr}' should not be included"
   end
+
+  private
+
+    def get_auth_token(user, token = nil)
+      token ||= user.auth_tokens.first.try(:value)
+      yield token unless token.nil?
+    end
 end
 
 ActiveRecord::FixtureSet.context_class.send :include, TestPasswordHelper

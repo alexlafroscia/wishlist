@@ -1,5 +1,3 @@
-require 'securerandom'
-
 VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
 class User < ActiveRecord::Base
@@ -12,8 +10,6 @@ class User < ActiveRecord::Base
 
   has_secure_password
 
-  before_create :set_auth_token
-
   has_many :lists, dependent: :destroy,
                    foreign_key: 'owner_id',
                    inverse_of: :owner
@@ -22,27 +18,41 @@ class User < ActiveRecord::Base
   has_many :subscribed_lists, through: :subscriptions,
                               source: :list
 
+  has_many :auth_tokens, dependent: :destroy
+
   # Public: Authenticate a user
+  #
+  # Given a user's email address and password, authenticate a user and generate
+  # a new authentication token for their session
   #
   # Examples:
   #
-  #   user = User.authenticate('user@example.com', 'foobar')
+  #   token = User.authenticate('user@example.com', 'foobar')
+  #   token.value # => 'sadioasdfjqesdfklj2319adfjk....'
   #
   # email - The email address for the user
   # password - The password for the user
   #
-  # Returns: The user, if the credentials were correct.
+  # Returns: The auth token, if the credentials were correct.
   def self.authenticate(email, password)
     user = find_by_email(email)
-    return user if user && user.authenticate(password)
+    if user && user.authenticate(password)
+      user.generate_auth_token
+    end
   end
 
-  # Public: Generate a new auth token for the user
+  # Public: Look up a user by an auth token
   #
-  # Returns: The new auth token.
-  def regenerate_auth_token
-    self.auth_token = generate_auth_token
-    auth_token
+  # Examples:
+  #
+  #   user = User.find_by_token('some-auth-token')
+  #
+  # token_value - The value of the auth token
+  #
+  # Returns; The user associated with the given token
+  def self.find_by_token(token_value)
+    token = AuthToken.find_by_value(token_value)
+    token.user if token.present?
   end
 
   # Public: Return the lists that are accessible to the user
@@ -54,14 +64,11 @@ class User < ActiveRecord::Base
     list_copy
   end
 
-  private
-
-    def set_auth_token
-      return if auth_token.present?
-      self.auth_token = generate_auth_token
-    end
-
-    def generate_auth_token
-      SecureRandom.uuid.gsub(/\-/, '')
-    end
+  # Public: Make a new auth token for the user
+  #
+  # Returns: nothing.
+  def generate_auth_token
+    token = AuthToken.new(user: self)
+    token if token.save
+  end
 end
