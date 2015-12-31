@@ -1,1 +1,10 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+current_user:
+  name: 'Example User'
+  email: 'user@example.com'
+  password_digest: <%= default_password_digest %>
+
+other_user:
+  name: 'Other User'
+  email: 'other@example.com'
+  password_digest: <%= default_password_digest %>

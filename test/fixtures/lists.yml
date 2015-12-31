@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+owned_list:
+  title: 'Owned List'
+  owner: current_user
+
+subscribed_list:
+  title: 'Subscribed List'
+  owner: other_user
+
+inaccessible_list:
+  title: 'Inaccessible List'
+  owner: other_user

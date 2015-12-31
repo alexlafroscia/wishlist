@@ -27,7 +27,12 @@ module Authentication
   # Get the currently logged-in user from the authentication token header
   def current_user
     @current_user ||= authenticate_with_http_token do |token|
-      User.find_by_auth_token(token)
+      user = User.find_by_token(token)
+      unless user.nil?
+        @authentication ||= {}
+        @authentication[:current_token_value] = token
+      end
+      user
     end
   end
 

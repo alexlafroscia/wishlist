@@ -1,6 +1,7 @@
 # Wishlist
 
 [![Build Status](https://travis-ci.org/alexlafroscia/wishlist.svg?branch=master)](https://travis-ci.org/alexlafroscia/wishlist)
+[![Coverage Status](https://coveralls.io/repos/alexlafroscia/wishlist/badge.svg?branch=master&service=github)](https://coveralls.io/github/alexlafroscia/wishlist?branch=master)
 
 > Ruby on Rails and Ember.js application for making wishlists and sharing them with friends and family
 

@@ -2,10 +2,8 @@ require 'test_helper'
 
 class Api::SessionControllerTest < ActionController::TestCase
   def setup
-    @current_user = User.new(name: 'Example User',
-                             email: 'user@example.com',
-                             password: 'foobar')
-    @current_user.save
+    @current_user = users(:current_user)
+    @current_user.save!
   end
 
   def teardown
@@ -17,6 +15,9 @@ class Api::SessionControllerTest < ActionController::TestCase
     get :get
     assert_equal @current_user, assigns[:current_user], 'Verified the user'
     assert_response :success
+    assert_attribute_value 'email', 'user@example.com'
+    assert_attribute_value 'name', 'Example User'
+    assert_attribute_not_included 'password'
   end
 
   test 'should error when getting the current user when not logged on' do
@@ -25,12 +26,22 @@ class Api::SessionControllerTest < ActionController::TestCase
   end
 
   test 'should log a user in with email and password' do
-    post :create, email: 'user@example.com', password: 'foobar'
+    post :create, email: 'user@example.com', password: default_password
     assert_response :success
+    body = JSON.parse(@response.body)
+    assert_equal body['auth_token'], assigns[:token].value
   end
 
   test 'should fail to log in with incorrect email and password' do
     post :create, email: 'user@example.com', password: ''
     assert_response 401
+  end
+
+  test 'should delete the auth token when logging out' do
+    authenticate @current_user
+    assert_difference('AuthToken.count', -1) do
+      delete :destroy
+      assert_response :success
+    end
   end
 end
