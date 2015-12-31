@@ -6,6 +6,7 @@ export default function() {
     return {
       data: {
         id: currentUser.id,
+        type: 'user',
         attributes: {
           name: currentUser.name,
           email: currentUser.email
