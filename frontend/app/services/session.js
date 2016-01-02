@@ -1,7 +1,9 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import ajax from 'ic-ajax';
 
 const { Service, computed, isEmpty } = Ember;
+const { PromiseObject } = DS;
 
 export default Service.extend({
   accessToken: computed({
@@ -17,6 +19,24 @@ export default Service.extend({
         return value;
       }
     }
+  }),
+
+  /**
+   * Get the current user
+   *
+   * @public
+   * @property {PromiseObject} currentUser
+  */
+  currentUser: computed(function() {
+    const options = {
+      url: '/api/session',
+      dataType: 'json'
+    };
+    const promise = ajax(options)
+      .then(() => {
+        //magic
+      });
+    return PromiseObject.create({ promise });
   }),
 
   /**
@@ -40,6 +60,25 @@ export default Service.extend({
       .then((result) => {
         const token = result.authToken;
         this.set('accessToken', token);
+      });
+  },
+
+  /**
+   * Destroy the user session
+   *
+   * @public
+   * @method logout
+   * @return {Promise} Resolves if successfull
+   */
+  logout() {
+    const options = {
+      url: '/api/session',
+      dataType: 'json',
+      type: 'DELETE'
+    };
+    return ajax(options)
+      .then(() => {
+        this.set('accessToken', null);
       });
   }
 });
