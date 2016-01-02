@@ -17,7 +17,7 @@ export default function() {
 
   this.post('session', function() {
     return {
-      auth_token: 'abcde'
+      authToken: 'abcde'
     };
   });
 
@@ -25,4 +25,3 @@ export default function() {
     return {};
   });
 }
-

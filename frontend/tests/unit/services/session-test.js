@@ -1,5 +1,6 @@
 /* globals localStorage */
 import { moduleFor, test } from 'ember-qunit';
+import { skip } from 'qunit';
 
 let previousValue = null;
 
@@ -37,7 +38,7 @@ test('it clears the value if localStorage when the accessToken property is set t
   assert.equal(undefined, valLocalStorage);
 });
 
-test('can get the login token by logging the user in', function(assert) {
+skip('can get the login token by logging the user in', function(assert) {
   assert.expect(2);
   const service = this.subject({
     accessToken: ''
@@ -52,7 +53,7 @@ test('can get the login token by logging the user in', function(assert) {
     });
 });
 
-test('login returns a rejected promise if it failed', function(assert) {
+skip('login returns a rejected promise if it failed', function(assert) {
   // Set up error response for endpoint
   server.get('session', { }, 401);
 
@@ -69,7 +70,7 @@ test('login returns a rejected promise if it failed', function(assert) {
     });
 });
 
-test('login is rejected if the email is not present', function(assert) {
+skip('login is rejected if the email is not present', function(assert) {
   assert.expect(1);
   const service = this.subject({
     accessToken: ''
@@ -85,7 +86,7 @@ test('login is rejected if the email is not present', function(assert) {
     });
 });
 
-test('login is rejected if the password is not present', function(assert) {
+skip('login is rejected if the password is not present', function(assert) {
   assert.expect(1);
   const service = this.subject({
     accessToken: ''
