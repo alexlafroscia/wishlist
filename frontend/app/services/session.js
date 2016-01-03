@@ -34,7 +34,7 @@ export default Service.extend({
     };
     const promise = ajax(options)
       .then(() => {
-        //magic
+        // magic
       });
     return PromiseObject.create({ promise });
   }),
