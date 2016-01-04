@@ -1,34 +1,18 @@
 import Ember from 'ember';
-import { initialize } from '../../../instance-initializers/ajax-setup';
-import { module, test } from 'qunit';
-import destroyApp from '../../helpers/destroy-app';
+import { moduleFor, test } from 'ember-qunit';
 import Pretender from 'pretender';
-import ajax from 'ic-ajax';
 
 const tokenRegex = /^Token{1}\s(\w*)$/;
-let sessionService;
+const authTokenValue = 'abcd';
 
-module('Unit | Instance Initializer | ajax setup', {
-  beforeEach() {
-    Ember.run(() => {
-      this.application = Ember.Application.create();
-      this.application.buildInstance();
-
-      sessionService = Ember.Object.create({ accessToken: '' });
-      this.application.register('service:session', sessionService);
-    });
-  },
-  afterEach() {
-    Ember.run(this.application, 'destroy');
-    destroyApp(this.application);
-  }
+moduleFor('service:ajax', 'Unit | Service | ajax', {
+  // Specify the other units that are required for this test.
+  // needs: ['service:foo']
 });
 
 test('it adds the access token if it is available', function(assert) {
   assert.expect(1);
 
-  const authTokenValue = 'abcd';
-  sessionService.set('accessToken', authTokenValue);
   const server = new Pretender(function() {
     this.get('/api/session', function({ requestHeaders }) {
       const match = tokenRegex.exec(requestHeaders.Authorization);
@@ -38,8 +22,10 @@ test('it adds the access token if it is available', function(assert) {
     });
   });
 
-  initialize(this.application);
-  return ajax({ url: '/api/session' })
+  const service = this.subject({
+    session: Ember.Object.create({ accessToken: authTokenValue })
+  });
+  return service.request('/api/session')
     .then(function() {
       server.shutdown();
     });
@@ -55,8 +41,10 @@ test('it does not add the auth header if the token is empty', function(assert) {
     });
   });
 
-  initialize(this.application);
-  return ajax({ url: '/api/session' })
+  const service = this.subject({
+    session: Ember.Object.create({ accessToken: '' })
+  });
+  return service.request('/api/session')
     .then(function() {
       server.shutdown();
     });
