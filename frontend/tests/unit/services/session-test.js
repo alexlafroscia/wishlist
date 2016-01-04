@@ -1,17 +1,21 @@
 /* globals localStorage */
 import { moduleFor, test } from 'ember-qunit';
 import { skip } from 'qunit';
+import FakeServer, { stubRequest } from 'ember-cli-fake-server';
 
 let previousValue = null;
 
 moduleFor('service:session', 'Unit | Service | session', {
+  needs: ['service:ajax'],
   setup() {
     previousValue = localStorage.getItem('accessToken');
     localStorage.setItem('accessToken', 'abcd');
+    FakeServer.start();
   },
   teardown() {
     localStorage.setItem('accessToken', previousValue);
     previousValue = null;
+    FakeServer.stop();
   }
 });
 
@@ -38,26 +42,41 @@ test('it clears the value if localStorage when the accessToken property is set t
   assert.equal(undefined, valLocalStorage);
 });
 
-skip('can get the login token by logging the user in', function(assert) {
-  assert.expect(2);
+test('can get the login token by logging the user in', function(assert) {
+  assert.expect(4);
+
+  const email = 'current-user@example.com';
+  const password = 'foobar';
+  const accessToken = 'abcde';
+
+  stubRequest('post', '/api/session', function(request) {
+    const { requestBody } = request;
+    const body = JSON.parse(requestBody);
+    assert.equal(body.email, email, 'Sent email field correctly');
+    assert.equal(body.password, password, 'Sent password field correctly');
+    request.ok({ authToken: accessToken });
+  });
+
   const service = this.subject({
     accessToken: ''
   });
-  return service.login('current-user@example.com', 'foobar')
+  return service.login(email, password)
     .catch(function() {
-      assert.ok(false, 'Login failed');
+      assert.ok(false, 'Login was successful');
     })
     .then(function() {
       assert.ok(true, 'Login was successful');
-      assert.equal('abcde', service.get('accessToken'), 'Set the access token');
+      assert.equal(service.get('accessToken'), accessToken, 'Set the access token');
     });
 });
 
-skip('login returns a rejected promise if it failed', function(assert) {
-  // Set up error response for endpoint
-  server.get('session', { }, 401);
-
+test('login returns a rejected promise if it failed', function(assert) {
   assert.expect(1);
+
+  stubRequest('post', '/api/session', function(request) {
+    request.error();
+  });
+
   const service = this.subject({
     accessToken: ''
   });
@@ -88,9 +107,8 @@ skip('login is rejected if the email is not present', function(assert) {
 
 skip('login is rejected if the password is not present', function(assert) {
   assert.expect(1);
-  const service = this.subject({
-    accessToken: ''
-  });
+
+  const service = this.subject({ accessToken: '' });
   return service.login('current-user@example.com', '')
     .then(function() {
       assert.ok(false, 'Promise should have been rejected');

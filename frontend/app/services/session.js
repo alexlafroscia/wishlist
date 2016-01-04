@@ -1,11 +1,13 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import ajax from 'ic-ajax';
 
-const { Service, computed, isEmpty } = Ember;
+const { Service, computed, inject, isEmpty } = Ember;
 const { PromiseObject } = DS;
+const { service } = inject;
 
 export default Service.extend({
+  ajax: service(),
+
   accessToken: computed({
     get() {
       return localStorage.getItem('accessToken');
@@ -28,11 +30,7 @@ export default Service.extend({
    * @property {PromiseObject} currentUser
   */
   currentUser: computed(function() {
-    const options = {
-      url: '/api/session',
-      dataType: 'json'
-    };
-    const promise = ajax(options)
+    const promise = this.get('ajax').post('/api/session')
       .then(() => {
         // magic
       });
@@ -51,12 +49,11 @@ export default Service.extend({
   login(email, password) {
     const data = { email, password };
     const options = {
-      url: '/api/session',
       dataType: 'json',
-      type: 'POST',
-      data
+      contentType: 'application/json',
+      data: JSON.stringify(data)
     };
-    return ajax(options)
+    return this.get('ajax').post('/api/session', options)
       .then((result) => {
         const token = result.authToken;
         this.set('accessToken', token);
@@ -71,12 +68,7 @@ export default Service.extend({
    * @return {Promise} Resolves if successfull
    */
   logout() {
-    const options = {
-      url: '/api/session',
-      dataType: 'json',
-      type: 'DELETE'
-    };
-    return ajax(options)
+    return this.get('ajax').delete('/api/session', { dataType: 'json' })
       .then(() => {
         this.set('accessToken', null);
       });
