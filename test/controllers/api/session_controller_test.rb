@@ -29,7 +29,7 @@ class Api::SessionControllerTest < ActionController::TestCase
     post :create, email: 'user@example.com', password: default_password
     assert_response :success
     body = JSON.parse(@response.body)
-    assert_equal body['auth_token'], assigns[:token].value
+    assert_equal body['authToken'], assigns[:token].value
   end
 
   test 'should fail to log in with incorrect email and password' do

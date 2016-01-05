@@ -7,7 +7,7 @@ class Api::SessionController < ApplicationController
     if @token.nil?
       render json: {}, status: 401
     else
-      render json: { auth_token: @token.value }
+      render json: { authToken: @token.value }
     end
   end
 

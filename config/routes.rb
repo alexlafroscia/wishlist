@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :api_tokens
   namespace :api do
     get 'session', to: 'session#get'
     post 'session', to: 'session#create'
