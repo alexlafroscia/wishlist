@@ -1,9 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-const { Service, computed, inject, isEmpty } = Ember;
+const { RSVP, Service, computed, inject, isEmpty } = Ember;
 const { PromiseObject } = DS;
 const { service } = inject;
+const { reject } = RSVP;
 
 export default Service.extend({
   ajax: service(),
@@ -47,6 +48,22 @@ export default Service.extend({
    * @return {Promise} Resolves to current user
    */
   login(email, password) {
+    const errors = [];
+    if (isEmpty(email)) {
+      errors.push('Email must be provided');
+    }
+    if (isEmpty(password)) {
+      errors.push('Password must be provided');
+    }
+    if (!(typeof email === 'string' || email instanceof String)) {
+      errors.push('Email must be a string');
+    }
+    if (!(typeof password === 'string' || password instanceof String)) {
+      errors.push('Password must be a string');
+    }
+    if (!isEmpty(errors)) {
+      return reject({ errors });
+    }
     const data = { email, password };
     const options = {
       dataType: 'json',

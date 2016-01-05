@@ -1,6 +1,5 @@
 /* globals localStorage */
 import { moduleFor, test } from 'ember-qunit';
-import { skip } from 'qunit';
 import FakeServer, { stubRequest } from 'ember-cli-fake-server';
 
 let previousValue = null;
@@ -89,7 +88,7 @@ test('login returns a rejected promise if it failed', function(assert) {
     });
 });
 
-skip('login is rejected if the email is not present', function(assert) {
+test('login is rejected if the email is not present', function(assert) {
   assert.expect(1);
   const service = this.subject({
     accessToken: ''
@@ -105,7 +104,7 @@ skip('login is rejected if the email is not present', function(assert) {
     });
 });
 
-skip('login is rejected if the password is not present', function(assert) {
+test('login is rejected if the password is not present', function(assert) {
   assert.expect(1);
 
   const service = this.subject({ accessToken: '' });
@@ -117,5 +116,46 @@ skip('login is rejected if the password is not present', function(assert) {
       const { errors } = data;
       const [ error ] = errors;
       assert.equal('Password must be provided', error);
+    });
+});
+
+test('login rejected if email is not a String', function(assert) {
+  assert.expect(1);
+  const service = this.subject({ accessToken: '' });
+  return service.login(12345, 'foobar')
+    .then(function() {
+      assert.ok(false, 'Promise should have been rejected');
+    })
+    .catch(function(data) {
+      const { errors } = data;
+      const [ error ] = errors;
+      assert.equal('Email must be a string', error);
+    });
+});
+
+test('login rejected if password is not a String', function(assert) {
+  assert.expect(1);
+  const service = this.subject({ accessToken: '' });
+  return service.login('current-user@example.com', 12345)
+    .then(function() {
+      assert.ok(false, 'Promise should have been rejected');
+    })
+    .catch(function(data) {
+      const { errors } = data;
+      const [ error ] = errors;
+      assert.equal('Password must be a string', error);
+    });
+});
+
+test('login can return multiple errors at once', function(assert) {
+  assert.expect(1);
+  const service = this.subject({ accessToken: '' });
+  return service.login(1234, '')
+    .then(function() {
+      assert.ok(false, 'Promise should have been rejected');
+    })
+    .catch(function(data) {
+      const { errors } = data;
+      assert.equal(errors.length, 2, 'Returns two errors');
     });
 });
